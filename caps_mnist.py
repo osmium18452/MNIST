@@ -69,7 +69,7 @@ with tf.Session() as sess:
 		print("initialized")
 		print("==============")
 	
-	for iter in range(2000):
+	for iter in range(3000):
 		idx = np.random.choice(x_train.shape[0], size=batch_size, replace=False)
 		train_x = x_train[idx, :]
 		train_y = y_train[idx]
@@ -82,7 +82,11 @@ with tf.Session() as sess:
 			test_x = x_test[idx, :]
 			test_y = y_test[idx]
 			print("test batch accuracy:%.4f" % sess.run(accuracy, feed_dict={x: test_x.reshape([-1, 28, 28, 1]),
-																			 y: tf.one_hot(test_y, depth=10)}))
-			saver.save(sess, save_path)
-	print(sess.run(prob,feed_dict={x:x_test[0:10],y:y_test[0:10]}))
+																			 y: test_y}))
+			# saver.save(sess, save_path)
+	arr=sess.run(prob,feed_dict={x:x_test[0:10].reshape([-1, 28, 28, 1]),y:y_test[0:10]})
+	for item in arr:
+		for i in item:
+			print("%.6f"%i,end=" ")
+		print()
 	print("FINISHED")
