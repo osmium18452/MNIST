@@ -76,7 +76,7 @@ with tf.Session() as sess:
 		_, batch_cost, batch_acc = sess.run([optimizer, cost, accuracy], feed_dict={x: train_x.reshape([-1, 28, 28, 1]),
 																					y: train_y})
 		if iter % 100 == 99:
-			print("iter:%5d,cost:%.5f,acc:%.4f" % (iter + 1, batch_cost, batch_acc))
+			print("iter:%5d, cost:%.5f, acc:%.4f" % (iter + 1, batch_cost, batch_acc))
 		if iter % 1000 == 999:
 			idx = np.random.choice(x_test.shape[0], size=batch_size, replace=False)
 			test_x = x_test[idx, :]
