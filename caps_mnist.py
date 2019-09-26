@@ -1,4 +1,4 @@
-from CapsLayer import capslayer as cl
+import capslayer as cl
 import tensorflow as tf
 
 mnist=tf.keras.datasets.mnist
