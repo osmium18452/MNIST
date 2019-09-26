@@ -26,3 +26,13 @@ primary_args={
 	"out_caps_dims":[8,1]
 }
 net,activation=cl.layers.primaryCaps(net,**primary_args)
+
+digit_args={
+	"num_outputs":n_classes,
+	"out_caps_dims":[16,1],
+	"routing_method":"DynamicRouting"
+}
+pose,prob=cl.layers.dense(net,activation,**digit_args)
+
+margin_loss=cl.losses.margin_loss(y,prob)
+
