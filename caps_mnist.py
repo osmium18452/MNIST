@@ -38,14 +38,16 @@ activation = tf.reshape(activation, shape=[-1, num_caps])
 digit_args = {
 	"num_outputs": n_classes,
 	"out_caps_dims": [16, 1],
-	"routing_method": "DynamicRouting"
+	"routing_method": "EMRouting"
 }
 pose, prob = cl.layers.dense(net, activation, **digit_args)
+prob_argmax=tf.nn.softmax(prob)
 
 T=tf.one_hot(y,depth=10)
 margin_loss = cl.losses.margin_loss(T, prob)
+cross_entropy=tf.nn.softmax_cross_entropy_with_logits(labels=T,logits=prob)
 
-cost = tf.reduce_mean(margin_loss)
+cost = tf.reduce_mean(cross_entropy)
 accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(prob, 1), tf.argmax(T, 1)), "float"))
 saver = tf.train.Saver
 optimizer = tf.train.AdamOptimizer().minimize(cost)
@@ -59,7 +61,7 @@ restore = False
 
 with tf.Session() as sess:
 	if restore:
-		saver.restore(sess, save_path)
+		saver.restore(sess, save_path=save_path)
 		print("==============")
 		print("model restored")
 		print("==============")
@@ -69,7 +71,7 @@ with tf.Session() as sess:
 		print("initialized")
 		print("==============")
 	
-	for iter in range(3000):
+	for iter in range(5000):
 		idx = np.random.choice(x_train.shape[0], size=batch_size, replace=False)
 		train_x = x_train[idx, :]
 		train_y = y_train[idx]
@@ -84,7 +86,7 @@ with tf.Session() as sess:
 			print("test batch accuracy:%.4f" % sess.run(accuracy, feed_dict={x: test_x.reshape([-1, 28, 28, 1]),
 																			 y: test_y}))
 			# saver.save(sess, save_path)
-	arr=sess.run(prob,feed_dict={x:x_test[0:10].reshape([-1, 28, 28, 1]),y:y_test[0:10]})
+	arr=sess.run(prob_argmax,feed_dict={x:x_test[0:10].reshape([-1, 28, 28, 1]),y:y_test[0:10]})
 	for item in arr:
 		for i in item:
 			print("%.6f"%i,end=" ")
